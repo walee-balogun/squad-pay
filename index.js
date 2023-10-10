@@ -1,10 +1,19 @@
 const app = require('./src/app');
 require('dotenv').config();
+const sequelize = require('./src/sequelize');
 
-const port = process.env.port || 3000;
-const server = app.listen(port, () => {
-    console.info(`Listening to port ${port}`);
-});
+let server;
+
+(async () => {
+    const dbConn = sequelize.connect({ hostname: 'localhost', username: 'postgres', password: 'P@33w0rd.123$', db: 'postgres' });
+
+    const port = process.env.port || 3000;
+    server = app.listen(port, () => {
+        console.info(`Listening to port ${port}`);
+    });
+
+
+})();
 
 const exitHandler = () => {
     if (server) {
