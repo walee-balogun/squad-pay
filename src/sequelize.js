@@ -12,7 +12,8 @@ const connect = async (options) => {
             idle: 200000,
             // @note https://github.com/sequelize/sequelize/issues/8133#issuecomment-359993057
             acquire: 1000000,
-        }
+        },
+        logging: false
     })
 
     try {
@@ -38,7 +39,7 @@ const cleanup = async () => {
 
         await sequelize.close();
 
-        mediator.emit('db.close');
+        //mediator.emit('db.close');
 
     } catch (err) {
 

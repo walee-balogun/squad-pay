@@ -3,26 +3,38 @@ const helmet = require('helmet');
 const xss = require('xss-clean');
 const v1Routes = require('./routes');
 
-const app = express();
+const init = (container) => {
+    const app = express();
 
-// set security HTTP headers
-app.use(helmet());
+    // set security HTTP headers
+    app.use(helmet());
 
-// parse json request body
-app.use(express.json({ limit: '5mb' }));
+    // parse json request body
+    app.use(express.json({ limit: '5mb' }));
 
-// sanitize request data
-app.use(xss());
+    // sanitize request data
+    app.use(xss());
 
-// enable CORS
-app.use(function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH');
-    res.header('Access-Control-Allow-Headers', 'Origin, Accept, X-Requested-With, Content-Type');
+    // enable CORS
+    app.use(function (req, res, next) {
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH');
+        res.header('Access-Control-Allow-Headers', 'Origin, Accept, X-Requested-With, Content-Type');
 
-    next();
-});
+        next();
+    });
 
-app.use(`/v1/`, v1Routes); // routes
+    app.use((req, res, next) => {
+        
+        req.container = container.createScope()
+        next()
+      
+    });
 
-module.exports = app;
+    app.use(`/v1/`, v1Routes.init(container)); // routes
+
+    return app;
+}
+
+
+module.exports = Object.assign({}, { init });

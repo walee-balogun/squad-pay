@@ -1,14 +1,26 @@
 const express = require('express');
 const router = express.Router();
 
-router.route('/').get((req, res, next)=>{
+const init = (container) => {
 
-    return res.status(200).send({
-        success: true,
-        message: "It Works",
-        data: {},
+    router.route('/').get((req, res, next) => {
+
+        return res.status(200).send({
+            success: true,
+            message: "It Works",
+            data: {},
+        });
     });
-});
 
+    router.post('/transactions/process', container.resolve('transactionsController').process);
 
-module.exports = router;
+    router.get('/transactions', container.resolve('transactionsController').getAll);
+
+    router.post('/transactions/settle', container.resolve('transactionsController').settle);
+
+    router.get('/balance/merchant/:id', container.resolve('transactionsController').getBalances);
+
+    return router;
+}
+
+module.exports = Object.assign({}, { init });
